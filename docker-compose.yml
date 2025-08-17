@@ -1,0 +1,7 @@
+services:
+  your_spotify_downloader:
+    image: lunyaadev/your_spotify_downloader
+    environment:
+      MONGODB_URL: mongodb://localhost:27017
+    volumes:
+      - ./download:/download

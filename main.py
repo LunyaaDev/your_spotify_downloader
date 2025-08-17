@@ -21,20 +21,13 @@ while 1:
     # Get tracks from database
     tracks = [track for track in tracks_collection.find()]
 
-    # get list of downloaded track ids
-    existing_files = os.listdir(download_dir)
-    existing_ids = [x.replace(".mp3", "") for x in existing_files]
-
-    # filter non downloaded tracks
-    tracks_to_download = [track for track in tracks if track["id"] not in existing_ids]
-
     # download tracks using spotdl
-    for track in tracks_to_download:
+    for track in tracks:
         subprocess.run(
             [
                 "spotdl",
                 "--output",
-                os.path.join(download_dir, "{track-id}.{output-ext}"),
+                os.path.join(download_dir, "{artist}/{artists} - {title}.{output-ext}"),
                 track["external_urls"]["spotify"],
             ]
         )
