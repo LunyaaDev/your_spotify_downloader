@@ -7,6 +7,10 @@ import time
 load_dotenv()
 
 
+def batch_list(items, batch_size=100):
+    return [items[i : i + batch_size] for i in range(0, len(items), batch_size)]
+
+
 mongodb_url = os.environ.get("MONGODB_URL")
 mongodb_database = os.environ.get("MONGODB_DATABASE", "your_spotify")
 download_dir = os.environ.get("DOWNLOAD_DIR", "/download")
@@ -22,15 +26,15 @@ while 1:
     tracks = [track for track in tracks_collection.find()]
 
     # download tracks using spotdl
-    for track in tracks:
+    for chunk in batch_list(tracks):
         subprocess.run(
             [
                 "spotdl",
                 "--output",
                 os.path.join(download_dir, "{artist}/{artists} - {title}.{output-ext}"),
-                track["external_urls"]["spotify"],
+                "download",
             ]
+            + [track["external_urls"]["spotify"] for track in chunk]
         )
-
-    # wait 10 min and rerun
-    time.sleep(60 * 10)
+        print("waiting 1 min before continuing")
+        time.sleep(60 * 1)
